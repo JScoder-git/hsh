@@ -1,0 +1,70 @@
+void addLeftBoundary(TreeNode<int> *root, vector<int> &res) {
+    TreeNode<int> *cur = root->left;
+    while (cur) {
+        if (!(cur->left == nullptr && cur->right == nullptr)) res.push_back(cur->data);
+        if (cur->left) cur = cur->left;
+        else cur = cur->right;
+    }
+}
+
+void addLeaves(TreeNode<int> *root, vector<int> &res) {
+    if (root == nullptr) return;
+    if (root->left == nullptr && root->right == nullptr) {
+        res.push_back(root->data);
+        return;
+    }
+    addLeaves(root->left, res);
+    addLeaves(root->right, res);
+}
+
+void addRightBoundary(TreeNode<int> *root, vector<int> &res) {
+    vector<int> tmp;
+    TreeNode<int> *cur = root->right;
+    while (cur) {
+        if (!(cur->left == nullptr && cur->right == nullptr)) tmp.push_back(cur->data);
+        if (cur->right) cur = cur->right;
+        else cur = cur->left;
+    }
+    for (int i = tmp.size() - 1; i >= 0; --i) {
+        res.push_back(tmp[i]);
+    }
+}
+
+vector<int> traverseBoundary(TreeNode<int> *root) {
+    vector<int> res;
+    if (root == nullptr) return res;
+
+    if (!(root->left == nullptr && root->right == nullptr)) res.push_back(root->data);
+
+    addLeftBoundary(root, res);
+    addLeaves(root, res);
+    addRightBoundary(root, res);
+
+    return res;
+}
+
+// Function to create a tree from input
+TreeNode<int>* buildTree(vector<int> &nodes) {
+    if (nodes.empty() || nodes[0] == -1) return nullptr;
+
+    TreeNode<int>* root = new TreeNode<int>(nodes[0]);
+    queue<TreeNode<int>*> q;
+    q.push(root);
+    int i = 1;
+    while (!q.empty() && i < nodes.size()) {
+        TreeNode<int>* cur = q.front();
+        q.pop();
+        if (nodes[i] != -1) {
+            cur->left = new TreeNode<int>(nodes[i]);
+            q.push(cur->left);
+        }
+        i++;
+        if (i >= nodes.size()) break;
+        if (nodes[i] != -1) {
+            cur->right = new TreeNode<int>(nodes[i]);
+            q.push(cur->right);
+        }
+        i++;
+    }
+    return root;
+}
